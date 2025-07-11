@@ -1,0 +1,152 @@
+**Repository Name**  
+gdc2
+
+**Description**  
+A multi-dimensional, algorithmic disease classification framework (JSON-LD, SRS & visual dashboards) as an intuitive ICD-10 alternative.
+
+---
+
+# GDC2 – Global Disease Classification 2.0
+
+A next-generation, six-axis disease taxonomy designed for rapid learning, AI integrations, and educational tools.
+
+## Table of Contents
+
+- [Overview](#overview)  
+- [Key Features](#key-features)  
+- [Architecture](#architecture)  
+- [Getting Started](#getting-started)  
+- [Data Model (JSON-LD)](#data-model-json-ld)  
+- [Classification Algorithm](#classification-algorithm)  
+- [Integrations](#integrations)  
+- [Contributing](#contributing)  
+- [License](#license)
+
+## Overview
+
+ICD-10’s one-dimensional hierarchy, lack of educational weighting, and thousands of codes make it hard for students and AI tools to navigate. GDC2 introduces six semantic axes—system, etiology, severity, prevalence, resource cost, and educational priority—into a human-readable code. Paired with SRS workflows and visual dashboards, GDC2 accelerates mastery of disease classification.
+
+## Key Features
+
+- **Six-axis taxonomy**:  
+  - Body System (SYS_…)  
+  - Etiology (ETI_…)  
+  - Severity (CXP_…)  
+  - Prevalence (PREV_…)  
+  - Resource Requirement (RES_…)  
+  - Educational Priority (EDU_…)
+
+- **Dynamic codes**:  
+  ```
+  SYS_CARDIO.ETI_ISCHEM.CXP_HIGH.PREV_HIGH.RES_MED.EDU_CORE
+  ```
+- **JSON-LD schema** for rich metadata and web compatibility  
+- **GraphQL/REST API** for multi-dimensional queries  
+- **SRS integration**: auto-generated Anki decks weighted by prevalence & difficulty  
+- **Visual dashboards**: heatmaps, sunbursts, interactive mind maps  
+
+## Architecture
+
+```mermaid
+flowchart LR
+  A[Import ICD-10 Dataset] --> B[Tag Six Axes]
+  B --> C[Compute Dynamic Code]
+  C --> D[Store in JSON-LD DB]
+  D --> E[GraphQL/REST API]
+  E --> F[Web & Mobile UI]
+  F --> G[SRS & Plugins]
+  F --> H[Visual Dashboards]
+```
+
+ Getting Started
+
+1. Clone the repo**  
+   ```bash
+   git clone https://github.com/<your-username>/gdc2.git
+   cd gdc2
+   ```
+2. Install dependencies
+   ```bash
+   npm install       # for web frontend
+   pip install -r requirements.txt  # for Python scripts
+   ```
+3. Load sample data 
+   ```bash
+   python scripts/load_icd.py --source data/icd10.csv
+   ```
+4. Start the API server
+   ```bash
+   npm run start     # GraphQL/REST server
+   ```
+5. Open the dashboard 
+   Navigate to `http://localhost:3000` in your browser.
+
+ Data Model (JSON-LD)
+
+```json
+{
+  "@context": "https://gdclass.org/schema",
+  "@type": "Disease",
+  "icd10": "I10",
+  "name": "Hypertension",
+  "dynamicCode": "SYS_CARDIO.ETI_IDIOPATHIC.CXP_MODERATE.PREV_HIGH.RES_LOW.EDU_CORE",
+  "tags": [
+    "SYS_CARDIO",
+    "ETI_IDIOPATHIC",
+    "CXP_MODERATE",
+    "PREV_HIGH",
+    "RES_LOW",
+    "EDU_CORE"
+  ],
+  "epidemiology": { "prevalence": 0.30 },
+  "severityScore": 2,
+  "resourceScore": 1,
+  "educationalLevel": "core"
+}
+```
+
+ Classification Algorithm
+
+```python
+def classify_diseases(icd_entries, epi_data):
+    results = []
+    for e in icd_entries:
+        sys   = map_system(e.code)
+        eti   = map_etiology(e.code)
+        cxp   = assess_severity(e.code)
+        prev  = epi_data.get(e.code, 'PREV_LOW')
+        res   = estimate_resources(e.code)
+        edu   = assign_edu_priority(prev, cxp)
+
+        dynamic_code = f"{sys}.{eti}.{cxp}.{prev}.{res}.{edu}"
+        results.append({
+            "icd10": e.code,
+            "name": e.name,
+            "dynamicCode": dynamic_code,
+            "tags": [sys, eti, cxp, prev, res, edu]
+        })
+    return results
+```
+
+ Integrations
+
+- SRS:  
+  - `scripts/export_anki.py` produces cloze-style cards.  
+- Obsidian & Notion Plugins:  
+  - Auto-inject tags and render Mermaid charts from JSON-LD entries.  
+- SDKs:  
+  - Swift (iOS/macOS), Kotlin (Android), JavaScript (Web)
+
+ Contributing
+
+1. Fork the repository  
+2. Create a feature branch (`git checkout -b feature/...`)  
+3. Commit your changes (`git commit -m "Add ..."`)  
+4. Push to the branch (`git push origin feature/...`)  
+5. Open a Pull Request
+
+Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for coding guidelines and review process.
+
+  License
+
+This project is licensed under the **MIT License**. See [LICENSE](./LICENSE) for details.
